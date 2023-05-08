@@ -43,7 +43,7 @@ It should now be installed.
   and use point and clicks to get free translations. However this is extremely slow as pages need to
   be clicked by a bot. Also the translations are uploaded in chunks so you might get weird translations
   at the cutoff point. While the API key will be lightning fast and the translations have been verified
-  to be excellent quality. Also, this mode may break unexpectadly in the future.
+  to be excellent quality. Also, this free mode may break unexpectadly in the future.
   * After the translations are done, you'll get a new folder that is the name of the video with "test_" prepended to it. So `myvideo.mp4` will generate a "text_myvideo" with srt files for all the languages
     * in the example above, you would get
       * `text_myvideo/en.srt`
