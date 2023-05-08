@@ -18,7 +18,12 @@ class MainTester(unittest.TestCase):
     def test_imports(self) -> None:
         """Test command line interface (CLI)."""
         shutil.rmtree("text_video", ignore_errors=True)
-        run(file="video.mp4", deepl_api_key=None, out_languages=["es", "fr", "zh"], model="large")
+        run(
+            file="video.mp4",
+            deepl_api_key=None,
+            out_languages=["es", "fr", "zh"],
+            model="large",
+        )
         self.assertTrue(os.path.exists("text_video"))
         self.assertTrue(os.path.exists(os.path.join("text_video", "en.srt")))
         self.assertTrue(os.path.exists(os.path.join("text_video", "es.srt")))

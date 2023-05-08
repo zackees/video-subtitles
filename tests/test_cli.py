@@ -9,6 +9,7 @@ os.chdir(HERE)
 
 COMMAND = "videosubtitles video.mp4 --api-key free --languages es,fr,zh --model large"
 
+
 class MainTester(unittest.TestCase):
     """Main tester class."""
 

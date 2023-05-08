@@ -7,6 +7,7 @@ Handles srt translation and wrapping.
 from srtranslator import SrtFile
 from srtranslator.translators.deepl_api import DeeplApi
 from srtranslator.translators.deepl_scrap import DeeplTranslator as FreeTranslator
+
 # from srtranslator.translators.translatepy import TranslatePy
 
 
@@ -17,7 +18,9 @@ def srt_wrap(srt_file: str) -> None:
     srt.save(srt_file)
 
 
-def translate(api_key: str | None, in_srt: str, out_srt: str, from_lang: str, to_lang: str) -> None:
+def translate(
+    api_key: str | None, in_srt: str, out_srt: str, from_lang: str, to_lang: str
+) -> None:
     """Translate a srt file."""
     if api_key is None:
         translator = FreeTranslator()

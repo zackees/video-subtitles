@@ -19,23 +19,28 @@ from video_subtitles.util import (
 HERE = os.path.dirname(os.path.abspath(__file__))
 API_KEY_FILE = os.path.join(HERE, "api_key.txt")
 
+
 def read_utf8(path: str) -> str:
     """Read a UTF-8 file."""
     with open(path, "r", encoding="utf-8") as file:
         return file.read()
-    
+
+
 def write_utf8(path: str, text: str) -> None:
     """Write a UTF-8 file."""
     with open(path, "w", encoding="utf-8") as file:
         file.write(text)
 
+
 def read_api_key() -> str:
     """Read the API key."""
     return read_utf8(API_KEY_FILE).strip()
 
+
 def write_api_key(api_key: str) -> None:
     """Write the API key."""
     write_utf8(API_KEY_FILE, api_key)
+
 
 def parse_languages(languages_str: str) -> list[str]:
     """Parse a comma-separated list of languages and return a list of language codes."""
@@ -112,7 +117,9 @@ def main() -> int:
         else:
             api_key = validate_api_key()
         if api_key == "free":
-            warnings.warn("Using free API key. Expect degraded results for large srt files")
+            warnings.warn(
+                "Using free API key. Expect degraded results for large srt files"
+            )
         run(
             file=file,
             deepl_api_key=api_key,
