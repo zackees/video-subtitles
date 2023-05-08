@@ -4,7 +4,6 @@ Command line front end interface.
 
 import argparse
 import os
-import sys
 
 from video_subtitles import __version__
 from video_subtitles.run import run
@@ -37,19 +36,11 @@ def ensure_dependencies() -> list[GraphicsInfo]:
 
 def parse_args() -> argparse.Namespace:
     """Parse command-line arguments."""
-    languages = LANGUAGE_CODES.keys()
     parser = argparse.ArgumentParser(description="Video Subtitles")
     parser.add_argument("--version", action="version", version=f"{__version__}")
     parser.add_argument("file", type=str, help="File or URL to process.")
     parser.add_argument(
-        "--input-language",
-        type=str,
-        help="Input language.",
-        choices=languages,
-        default="en",
-    )
-    parser.add_argument(
-        "--out-language",
+        "--languages",
         type=parse_languages,
         help="Output languages as a comma-separated list.",
         metavar="{en,es,fr,de,it,pt,ru,zh}",
@@ -63,8 +54,8 @@ def parse_args() -> argparse.Namespace:
         choices=MODELS.keys(),
     )
     args = parser.parse_args()
-    if not args.out_language:
-        parser.error("You must provide at least one --out-language")
+    if not args.languages:
+        parser.error("You must provide at least one --languages")
     return args
 
 
@@ -82,10 +73,8 @@ def main() -> int:
         for card in cuda_cards:
             print(f"  [{card.idx}]: {card.name}, {card.memory_gb} GB")
         run(
-            cuda_cards=cuda_cards,
             file=file,
-            input_language=args.input_language,
-            out_languages=args.out_language,
+            out_languages=args.languages,
             model=args.model,
         )
     except KeyboardInterrupt:
@@ -95,11 +84,4 @@ def main() -> int:
 
 
 if __name__ == "__main__":
-    if True:  # pylint: disable=using-constant-test
-        raise SystemExit(main())
-    sys.argv.append("video.mp4")
-    sys.argv.append("--out-language")
-    sys.argv.append("en,es")
-    sys.argv.append("--model")
-    sys.argv.append("medium")
-    main()
+    raise SystemExit(main())

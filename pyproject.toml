@@ -10,8 +10,11 @@ keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
-    "download"
+    "download",
+    "srtranslator"
 ]
+
+dynamic = ["version"]
 
 [tool.ruff]
 line-length = 200
