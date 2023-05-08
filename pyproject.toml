@@ -1,0 +1,39 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "video-subtitles"
+description = "Creates Video Subtitles"
+requires-python = ">=3.7"
+keywords = ["template-python-cmd"]
+license = { text = "BSD 3-Clause License" }
+classifiers = ["Programming Language :: Python :: 3"]
+dependencies = [
+
+]
+# Change this with the version number bump.
+# Also make the change in zcmds/version.py
+version = "1.0.0"
+
+[tool.ruff]
+line-length = 200
+
+[tool.pylint."MESSAGES CONTROL"]
+good-names = [
+    "c",
+    "i",
+    "ok",
+    "id",
+    "e",
+    "f"
+]
+
+[tool.isort]
+profile = "black"
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[project.scripts]
+videosubtitles = "video_subtitles.cli:main"
