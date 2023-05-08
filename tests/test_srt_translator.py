@@ -37,7 +37,7 @@ class DeepLTester(unittest.TestCase):
             with open(srt_file, encoding="utf-8", mode="w") as f:
                 f.write(SRT_TEXT)
             out_file = os.path.join(tmpdirname, "out.srt")
-            translate(srt_file, out_file, "en", "es")
+            translate(api_key=None, in_srt=srt_file, out_srt=out_file, from_lang="en", to_lang="es")
             with open(out_file, encoding="utf-8", mode="r") as f:
                 text = f.read()
         print(text)

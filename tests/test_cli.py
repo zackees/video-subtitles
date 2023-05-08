@@ -4,8 +4,10 @@ Unit test file.
 import os
 import unittest
 
-COMMAND = "videosubtitles"
+HERE = os.path.dirname(os.path.abspath(__file__))
+os.chdir(HERE)
 
+COMMAND = "videosubtitles video.mp4 --api-key free --languages es,fr,zh --model large"
 
 class MainTester(unittest.TestCase):
     """Main tester class."""

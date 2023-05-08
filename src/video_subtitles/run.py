@@ -22,6 +22,7 @@ def find_srt_files(folder: str) -> list[str]:
 
 def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
     file: str,
+    deepl_api_key: str | None,
     out_languages: list[str],
     model: str,
 ) -> None:
@@ -46,7 +47,8 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
         out_folder = os.path.join(outdir, language)
         os.makedirs(out_folder, exist_ok=True)
         out_file = os.path.join(out_folder, "out.srt")
-        translate(src_srt_file, out_file, "en", language)
+        translate(
+            api_key=deepl_api_key, in_srt=src_srt_file, out_srt=out_file, from_lang="en", to_lang=language)
         print(f"Translated: {src_srt_file} -> {out_file}")
     srt_wrap(src_srt_file)
     srt_files = find_srt_files(outdir)
