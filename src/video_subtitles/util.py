@@ -8,7 +8,7 @@ from shutil import which
 
 from download import download  # type: ignore
 
-URL = (
+INSTALL_TRANSCRIBE_ANYTHING_CUDA = (
     "https://raw.githubusercontent.com/zackees/transcribe-anything/main/install_cuda.py"
 )
 
@@ -18,7 +18,8 @@ class GraphicsInfo:
     """Graphics card information."""
 
     name: str
-    memory: str
+    memory_gb: float
+    idx: int
 
 
 def query_cuda_video_cards() -> list[GraphicsInfo]:
@@ -30,10 +31,10 @@ def query_cuda_video_cards() -> list[GraphicsInfo]:
     text = subprocess.check_output(cmd.split(" "), universal_newlines=True)
     lines = [line.strip() for line in text.split("\n") if line.strip() != ""]
     out: list[GraphicsInfo] = []
-    for line in lines:
+    for i, line in enumerate(lines):
         name, memory = line.split(",")
-        memory = memory.strip()
-        out.append(GraphicsInfo(name, memory))
+        memory_gb = int(memory.strip().split(" ")[0]) / 1024.0
+        out.append(GraphicsInfo(name, memory_gb, i))
     return out
 
 
@@ -42,13 +43,38 @@ def ensure_transcribe_anything_installed() -> None:
     print("Checking that transcribe_anything is installed...")
     try:
         subprocess.check_output(["transcribe_anything", "--help"])
+        print("...it is.")
         return
-    except subprocess.CalledProcessError:
+    except Exception:  # pylint: disable=broad-except
         print("transcribe_anything is not installed, installing now...")
         with tempfile.TemporaryDirectory() as tempdir:
-            download(URL, os.path.join(tempdir, "install_cuda.py"))
+            download(
+                INSTALL_TRANSCRIBE_ANYTHING_CUDA,
+                os.path.join(tempdir, "install_cuda.py"),
+            )
             rtn = subprocess.call(["python", os.path.join(tempdir, "install_cuda.py")])
             if rtn != 0:
                 raise RuntimeError(  # pylint: disable=raise-missing-from
                     "install_cuda.py failed."
                 )
+
+
+LANGUAGE_CODES = {
+    "en": "English",
+    "es": "Spanish",
+    "fr": "French",
+    "de": "German",
+    "it": "Italian",
+    "pt": "Portuguese",
+    "ru": "Russian",
+    "zh": "Chinese",
+}
+
+MODELS = {
+    # Maps model name to number of GPU memory (in gigabytes) required.
+    "tiny": 1.0,
+    "base": 1.0,
+    "small": 2.0,
+    "medium": 5.0,
+    "large": 10.0,
+}

@@ -11,6 +11,15 @@ URL = "https://github.com/zackees/video-subtitles"
 KEYWORDS = ""
 HERE = os.path.dirname(os.path.abspath(__file__))
 
+def parse_version() -> str:
+    """Get the version."""
+    version = os.path.join(HERE, "src", "video_subtitles", "__init__.py")
+    with open(version, encoding="utf-8", mode="r") as version_file:
+        version_lines = version_file.readlines()
+    for line in version_lines:
+        if "__version__" in line:
+            return line.split("=")[1].strip().strip('"').strip("'")
+
 
 def get_readme() -> str:
     """Get the contents of the README file."""
@@ -29,6 +38,7 @@ def get_readme() -> str:
 if __name__ == "__main__":
     setup(
         maintainer="Zachary Vorhies",
+        version=parse_version(),
         keywords=KEYWORDS,
         long_description=get_readme(),
         long_description_content_type="text/markdown",
