@@ -8,6 +8,8 @@ from transcribe_anything.api import transcribe
 
 from video_subtitles.translate import srt_wrap, translate
 
+IS_GITHUB = os.environ.get("GITHUB_ACTIONS", False)
+
 
 def find_srt_files(folder: str) -> list[str]:
     """Find srt files in a folder."""
@@ -33,7 +35,8 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     print(f"Model: {model}")
     print(f"File: {file}")
     print("Done running transcription")
-    out_en_dir = transcribe(url_or_file=file, device="cuda", model=model, language="en")
+    device = "cpu" if IS_GITHUB else "cuda"
+    out_en_dir = transcribe(url_or_file=file, device=device, model=model, language="en")
     print(f"Output directory: {out_en_dir}")
     if not os.path.exists(out_en_dir):
         raise RuntimeError(f"Error - folder does not exist: {out_en_dir}")

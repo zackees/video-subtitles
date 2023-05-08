@@ -11,6 +11,7 @@ COMMAND = "videosubtitles video.mp4 --api-key free --languages es,fr,zh --model 
 
 IS_GITHUB = os.environ.get("GITHUB_ACTIONS", False)
 
+
 class MainTester(unittest.TestCase):
     """Main tester class."""
 
