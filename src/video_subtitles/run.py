@@ -50,13 +50,28 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
         out_folder = os.path.join(outdir, language)
         os.makedirs(out_folder, exist_ok=True)
         out_file = os.path.join(out_folder, "out.srt")
-        translate(
-            api_key=deepl_api_key,
-            in_srt=src_srt_file,
-            out_srt=out_file,
-            from_lang="en",
-            to_lang=language,
-        )
+        attempts = 5
+        for i in range(attempts):
+            if i > 0:
+                print("Retrying...")
+            try:
+                if os.path.exists(out_file):
+                    os.remove(out_file)
+                translate(
+                    api_key=deepl_api_key,
+                    in_srt=src_srt_file,
+                    out_srt=out_file,
+                    from_lang="en",
+                    to_lang=language,
+                )
+                assert os.path.exists(
+                    out_file
+                ), f"Error during translation of {language}: file does not exist: {out_file}"
+                break
+            except Exception as err:  # pylint: disable=broad-except
+                print(err)
+                if i == attempts - 1:
+                    raise
         print(f"Translated: {src_srt_file} -> {out_file}")
     srt_wrap(src_srt_file)
     srt_files = find_srt_files(outdir)
@@ -68,4 +83,5 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
             os.remove(out_file)
         shutil.move(srt_file, out_file)
         shutil.rmtree(os.path.dirname(srt_file))
+        break
     print("Done translating")

@@ -80,6 +80,11 @@ def parse_args() -> argparse.Namespace:
         default="large",
         choices=MODELS.keys(),
     )
+    parser.add_argument(
+        "--quite",
+        action="store_true",
+        help="Don't say anything.",
+    )
     parser.add_argument("--api-key", default=None, help="Transcribe Anything API key.")
     args = parser.parse_args()
     if not args.languages:
@@ -127,7 +132,8 @@ def main() -> int:
             out_languages=args.languages,
             model=args.model,
         )
-        say(f"Finished generating srt files for {file}")
+        if not args.quite:
+            say(f"Finished generating srt files for {file}")
     except KeyboardInterrupt:
         print("Exiting due to keyboard interrupt.")
         return 1

@@ -31,6 +31,10 @@ To develop software, run `. ./activate.sh`
 
 It should now be installed.
 
+# First run
+
+  * Keep in mind that the first run will take a lot of time as it downloads the proper drivers for your computer. But this will only be done once. Also there is an API key
+  that you will be asked about, you can skip this by putting in `free` as the key.
 
 # Running
 
@@ -101,3 +105,8 @@ This environment requires you to use `git-bash`.
 # Linting
 
 Run `./lint.sh` to find linting errors using `ruff`, `pylint`, `flake8` and `mypy`.
+
+# Releases
+
+  * 1.0.1: Adds retry to translation step. Also alerts when the video is done.
+  * 1.0.0: Initial release
