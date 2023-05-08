@@ -6,3 +6,4 @@ pylint
 pytest
 tox
 ruff
+transcribe-anything
