@@ -1,8 +1,8 @@
 """
 Unit test file.
 """
-import unittest
 import os
+import unittest
 
 COMMAND = "videosubtitles"
 
