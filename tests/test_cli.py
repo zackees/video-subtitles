@@ -7,7 +7,7 @@ import unittest
 HERE = os.path.dirname(os.path.abspath(__file__))
 os.chdir(HERE)
 
-COMMAND = "videosubtitles video.mp4 --api-key free --languages es,fr,zh --model large"
+COMMAND = "videosubtitles video.mp4 --api-key free --languages es,fr,zh --model small"
 
 IS_GITHUB = os.environ.get("GITHUB_ACTIONS", False)
 
