@@ -2,8 +2,8 @@
 Unit test file.
 """
 import os
-import unittest
 import tempfile
+import unittest
 
 from video_subtitles.translate import translate
 
@@ -24,6 +24,7 @@ mogul ordered his army of propagandists to invert reality accordingly.
 """
 
 SRT_FILE = os.path.join(HERE, "out.srt")
+
 
 class DeepLTester(unittest.TestCase):
     """Main tester class."""
