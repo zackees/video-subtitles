@@ -8,6 +8,7 @@ import warnings
 
 from video_subtitles import __version__
 from video_subtitles.run import run
+from video_subtitles.say import say
 from video_subtitles.util import (
     LANGUAGE_CODES,
     MODELS,
@@ -126,6 +127,7 @@ def main() -> int:
             out_languages=args.languages,
             model=args.model,
         )
+        say(f"Finished generating srt files for {file}")
     except KeyboardInterrupt:
         print("Exiting due to keyboard interrupt.")
         return 1
