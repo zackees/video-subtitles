@@ -35,7 +35,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     print(f"Model: {model}")
     print(f"File: {file}")
     print("Done running transcription")
-    device = "cpu" if IS_GITHUB else "cuda"
+    device = "cuda" if not IS_GITHUB else "cpu"
     out_en_dir = transcribe(url_or_file=file, device=device, model=model, language="en")
     print(f"Output directory: {out_en_dir}")
     if not os.path.exists(out_en_dir):
@@ -83,5 +83,4 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
             os.remove(out_file)
         shutil.move(srt_file, out_file)
         shutil.rmtree(os.path.dirname(srt_file))
-        break
     print("Done translating")

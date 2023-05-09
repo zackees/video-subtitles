@@ -108,5 +108,6 @@ Run `./lint.sh` to find linting errors using `ruff`, `pylint`, `flake8` and `myp
 
 # Releases
 
+  * 1.0.2: Fix bug
   * 1.0.1: Adds retry to translation step. Also alerts when the video is done.
   * 1.0.0: Initial release

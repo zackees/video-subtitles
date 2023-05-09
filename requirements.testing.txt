@@ -3,7 +3,6 @@ isort
 flake8
 mypy
 pylint
-pytest
 tox
 ruff
 transcribe-anything
