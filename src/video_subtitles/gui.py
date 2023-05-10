@@ -78,6 +78,8 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         self.deepl_label = QLabel(self)
         self.deepl_label.setText("DeepL API Key:")
         self.deepl_input = QLineEdit(self)
+        self.deepl_input.setPlaceholderText("Enter your DeepL API key")
+        self.deepl_input.setEchoMode(QLineEdit.EchoMode.Password)
         self.deepl_input.setMaxLength(80)  # set maximum length to 80 characters
         self.deepl_input.setText(deepl_api_key)  # set the input field to the api key
         deepl_layout.addWidget(self.deepl_label)
