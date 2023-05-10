@@ -20,7 +20,7 @@ from video_subtitles.say import say
 def open_folder(path):
     """Opens a folder in the OS."""
     if platform.system() == "Windows":
-        os.startfile(path)
+        os.startfile(path)  # pylint: disable=no-member
     elif platform.system() == "Darwin":
         subprocess.Popen(["open", path])  # pylint: disable=consider-using-with
     else:
