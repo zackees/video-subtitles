@@ -6,10 +6,8 @@ Gui for the video_subtitles package
 
 import os
 import platform
-import queue
 import subprocess
 import sys
-import threading
 from threading import Thread
 
 from PyQt6 import QtCore  # type: ignore
@@ -27,6 +25,7 @@ from PyQt6.QtWidgets import (  # type: ignore
 from video_subtitles.run import run
 from video_subtitles.say import say
 from video_subtitles.settings import Settings
+from video_subtitles.thread_processor import ThreadProcessor
 from video_subtitles.util import MODELS
 
 settings = Settings()
@@ -145,43 +144,6 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
             self.on_drop_callback(
                 f, deepl_api_key, languages, model
             )  # pass api key to callback
-
-
-# Can't use futures because it doesn't have a daemon option so we have to
-# impliment our own thread processor.
-class ThreadProcessor(Thread):
-    """Thread processor."""
-
-    def __init__(self) -> None:
-        super().__init__(daemon=True)
-        self.pending_tasks: queue.Queue = queue.Queue()
-        self.processing_task: Thread | None = None
-        self.event = threading.Event()
-        self.start()
-
-    def run(self) -> None:
-        """Process each thread in the queue."""
-        while not self.event.wait(0.1):
-            if self.processing_task is not None:
-                if not self.processing_task.is_alive():
-                    self.processing_task.join()
-                    self.processing_task = None
-            if self.processing_task is not None:
-                continue
-            if self.pending_tasks.empty():
-                continue
-            self.processing_task = self.pending_tasks.get()
-            self.processing_task.start()
-
-    def add(self, thread: Thread) -> None:
-        """Queues a thread to be executed."""
-        assert thread.daemon is True
-        self.pending_tasks.put(thread)
-
-    def stop(self) -> None:
-        """Stops the thread executor."""
-        self.event.set()
-        self.join()
 
 
 def run_gui() -> None:
