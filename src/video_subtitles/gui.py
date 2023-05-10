@@ -182,8 +182,11 @@ def run_gui() -> None:
 
         # Open folder in the OS
         def _generate_subtitles(
-            videofile: str, deeply_api_key: str | None, languages: list[str], model: str,
-            convert_to_webvtt: bool
+            videofile: str,
+            deeply_api_key: str | None,
+            languages: list[str],
+            model: str,
+            convert_to_webvtt: bool,
         ):
             # perform the actual work here
             os.chdir(os.path.dirname(videofile))
@@ -203,8 +206,10 @@ def run_gui() -> None:
             open_folder(out)
             print("Generating subtitles for", videofile)
             voicename = os.path.basename(videofile).split(".")[0].replace("_", " ")
-            format = "WEBVTT" if convert_to_webvtt else "SRT"
-            say(f"Attention: {voicename} has completed subtitle generation in {format} format")
+            fmt = "WEBVTT" if convert_to_webvtt else "SRT"
+            say(
+                f"Attention: {voicename} has completed subtitle generation in {fmt} format"
+            )
 
         thread = Thread(
             target=_generate_subtitles,
