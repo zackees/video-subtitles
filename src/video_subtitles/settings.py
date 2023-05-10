@@ -5,9 +5,19 @@ Reads and writes settings to a json file.
 import json
 import os
 
+from appdirs import user_config_dir  # type: ignore
+
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-SETTINGS_JSON = os.path.join(HERE, "settings.json")
+
+def get_settings_path() -> str:
+    """Get settings path"""
+    env_path = user_config_dir("video-subtitles", "video-subtitles", roaming=True)
+    config_file = os.path.join(env_path, "settings.json")
+    return config_file
+
+
+SETTINGS_JSON = get_settings_path()
 
 
 class Settings:

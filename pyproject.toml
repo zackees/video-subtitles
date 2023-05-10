@@ -15,7 +15,8 @@ dependencies = [
     "gTTS==2.3.2",
     "playaudio==1.0.5",
     "PyQt6==6.3.1",
-    "webvtt-py==0.4.6"
+    "webvtt-py==0.4.6",
+    "appdirs==1.4.4",
 ]
 
 dynamic = ["version"]
