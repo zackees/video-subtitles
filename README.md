@@ -122,6 +122,7 @@ Run `./lint.sh` to find linting errors using `ruff`, `pylint`, `flake8` and `myp
 
 # Releases
 
+  * 1.0.6: Adds gui language help for language codes.
   * 1.0.5: Adds webvtt format option.
   * 1.0.4: Adds thread processor so that multiple files can be done one at a time.
   * 1.0.3: Adds gui.
