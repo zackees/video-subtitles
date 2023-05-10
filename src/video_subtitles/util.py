@@ -1,5 +1,7 @@
 """Utilities for video_subtitles."""
 
+# pylint: disable=line-too-long
+
 import os
 import subprocess
 import tempfile
@@ -71,15 +73,49 @@ def ensure_transcribe_anything_installed() -> None:
                 )
 
 
+def parse_languages(languages_str: str) -> list[str]:
+    """Parse a comma-separated list of languages and return a list of language codes."""
+    languages = languages_str.split(",")
+    languages = [language.strip().lower() for language in languages]
+    for language in languages:
+        if language not in LANGUAGE_CODES:
+            raise ValueError(f"Unknown language: {language}")
+    return languages
+
+
 LANGUAGE_CODES = {
-    "en": "English",
-    "es": "Spanish",
-    "fr": "French",
+    "bg": "Bulgarian",
+    "cs": "Czech",
+    "da": "Danish",
     "de": "German",
+    "el": "Greek",
+    "en": "English (unspecified variant for backward compatibility; please select EN-GB or EN-US instead)",
+    "en-gb": "English (British)",
+    "en-us": "English (American)",
+    "es": "Spanish",
+    "et": "Estonian",
+    "fi": "Finnish",
+    "fr": "French",
+    "hu": "Hungarian",
+    "id": "Indonesian",
     "it": "Italian",
-    "pt": "Portuguese",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "lt": "Lithuanian",
+    "lv": "Latvian",
+    "nb": "Norwegian (Bokmål)",
+    "nl": "Dutch",
+    "pl": "Polish",
+    "pt-br": "Portuguese (Brazilian)",
+    "pt-pt": "Portuguese (all Portuguese varieties excluding Brazilian Portuguese)",
+    "ro": "Romanian",
     "ru": "Russian",
-    "zh": "Chinese",
+    "sk": "Slovak",
+    "sl": "Slovenian",
+    "sv": "Swedish",
+    "tr": "Turkish",
+    "uk": "Ukrainian",
+    "zh": "Chinese (simplified)",
 }
 
 MODELS = {

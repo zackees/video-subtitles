@@ -12,25 +12,16 @@ from video_subtitles.run import run
 from video_subtitles.say import say
 from video_subtitles.settings import Settings
 from video_subtitles.util import (
-    LANGUAGE_CODES,
     MODELS,
     GraphicsInfo,
     ensure_transcribe_anything_installed,
+    parse_languages,
     query_cuda_video_cards,
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 settings = Settings()
-
-
-def parse_languages(languages_str: str) -> list[str]:
-    """Parse a comma-separated list of languages and return a list of language codes."""
-    languages = languages_str.split(",")
-    for language in languages:
-        if language not in LANGUAGE_CODES:
-            raise argparse.ArgumentTypeError(f"Invalid language code: {language}")
-    return languages
 
 
 def ensure_dependencies() -> list[GraphicsInfo]:

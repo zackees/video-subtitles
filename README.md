@@ -66,144 +66,51 @@ It should now be installed.
 
 # Language Reference
 
-#### Short hand language codes
+### Language Inputs
+
+We use openai whisper for language input. See whisper ai documents for a full supported list
+
+
+### Language outputs
+
+We use the deepl AI for translation. The language list is as follows:
 
 ```
-af,am,ar,as,az,ba,be,bg,bn,bo,br,bs,ca,cs,cy,da,
-de,el,en,es,et,eu,fa,fi,fo,fr,gl,gu,ha,haw,he,hi,
-hr,ht,hu,hy,id,is,it,ja,jw,ka,kk,km,kn,ko,la,lb,
-ln,lo,lt,lv,mg,mi,mk,ml,mn,mr,ms,mt,my,ne,nl,nn,
-no,oc,pa,pl,ps,pt,ro,ru,sa,sd,si,sk,sl,sn,so,sq,
-sr,su,sv,sw,ta,te,tg,th,tk,tl,tr,tt,uk,ur,uz,vi,
-yi,yo,zh
+    BG - Bulgarian
+    CS - Czech
+    DA - Danish
+    DE - German
+    EL - Greek
+    EN - English (unspecified variant for backward compatibility; please select EN-GB or EN-US instead)
+    EN-GB - English (British)
+    EN-US - English (American)
+    ES - Spanish
+    ET - Estonian
+    FI - Finnish
+    FR - French
+    HU - Hungarian
+    ID - Indonesian
+    IT - Italian
+    JA - Japanese
+    KO - Korean
+    LT - Lithuanian
+    LV - Latvian
+    NB - Norwegian (Bokmål)
+    NL - Dutch
+    PL - Polish
+    PT-BR - Portuguese (Brazilian)
+    PT-PT - Portuguese (all Portuguese varieties excluding Brazilian Portuguese)
+    RO - Romanian
+    RU - Russian
+    SK - Slovak
+    SL - Slovenian
+    SV - Swedish
+    TR - Turkish
+    UK - Ukrainian
+    ZH - Chinese (simplified)
 ```
 
-#### Full Language codes will also work
-
-```
-Afrikaans,Albanian,Amharic,Arabic,Armenian,Assamese,Azerbaijani,
-Bashkir,Basque,Belarusian,Bengali,Bosnian,Breton,Bulgarian,Burmese,
-Castilian,Catalan,Chinese,Croatian,Czech,Danish,Dutch,English,
-Estonian,Faroese,Finnish,Flemish,French,Galician,Georgian,German,
-Greek,Gujarati,Haitian,Haitian Creole,Hausa,Hawaiian,Hebrew,Hindi,
-Hungarian,Icelandic,Indonesian,Italian,Japanese,Javanese,Kannada,
-Kazakh,Khmer,Korean,Lao,Latin,Latvian,Letzeburgesch,Lingala,
-Lithuanian,Luxembourgish,Macedonian,Malagasy,Malay,Malayalam,
-Maltese,Maori,Marathi,Moldavian,Moldovan,Mongolian,Myanmar,Nepali,
-Norwegian,Nynorsk,Occitan,Panjabi,Pashto,Persian,Polish,Portuguese,
-Punjabi,Pushto,Romanian,Russian,Sanskrit,Serbian,Shona,Sindhi,
-Sinhala,Sinhalese,Slovak,Slovenian,Somali,Spanish,Sundanese,Swahili,
-Swedish,Tagalog,Tajik,Tamil,Tatar,Telugu,Thai,Tibetan,Turkish,
-Turkmen,Ukrainian,Urdu,Uzbek,Valencian,Vietnamese,Welsh,Yiddish,
-Yoruba
-```
-
-# Language code -> cononical name
-
-```
-{
-  "af": "Afrikaans",
-  "am": "Amharic",
-  "ar": "Arabic",
-  "as": "Assamese",
-  "az": "Azerbaijani",
-  "ba": "Bashkir",
-  "be": "Belarusian",
-  "bg": "Bulgarian",
-  "bn": "Bengali",
-  "bo": "Tibetan",
-  "br": "Breton",
-  "bs": "Bosnian",
-  "ca": "Catalan",
-  "cs": "Czech",
-  "cy": "Welsh",
-  "da": "Danish",
-  "de": "German",
-  "el": "Greek",
-  "en": "English",
-  "es": "Spanish",
-  "et": "Estonian",
-  "eu": "Basque",
-  "fa": "Persian",
-  "fi": "Finnish",
-  "fo": "Faroese",
-  "fr": "French",
-  "gl": "Galician",
-  "gu": "Gujarati",
-  "ha": "Hausa",
-  "haw": "Hawaiian",
-  "he": "Hebrew",
-  "hi": "Hindi",
-  "hr": "Croatian",
-  "ht": "Haitian Creole",
-  "hu": "Hungarian",
-  "hy": "Armenian",
-  "id": "Indonesian",
-  "is": "Icelandic",
-  "it": "Italian",
-  "ja": "Japanese",
-  "jw": "Javanese",
-  "ka": "Georgian",
-  "kk": "Kazakh",
-  "km": "Khmer",
-  "kn": "Kannada",
-  "ko": "Korean",
-  "la": "Latin",
-  "lb": "Luxembourgish",
-  "ln": "Lingala",
-  "lo": "Lao",
-  "lt": "Lithuanian",
-  "lv": "Latvian",
-  "mg": "Malagasy",
-  "mi": "Maori",
-  "mk": "Macedonian",
-  "ml": "Malayalam",
-  "mn": "Mongolian",
-  "mr": "Marathi",
-  "ms": "Malay",
-  "mt": "Maltese",
-  "my": "Burmese",
-  "ne": "Nepali",
-  "nl": "Dutch",
-  "nn": "Norwegian Nynorsk",
-  "no": "Norwegian",
-  "oc": "Occitan",
-  "pa": "Punjabi",
-  "pl": "Polish",
-  "ps": "Pashto",
-  "pt": "Portuguese",
-  "ro": "Romanian",
-  "ru": "Russian",
-  "sa": "Sanskrit",
-  "sd": "Sindhi",
-  "si": "Sinhalese",
-  "sk": "Slovak",
-  "sl": "Slovene",
-  "sn": "Shona",
-  "so": "Somali",
-  "sq": "Albanian",
-  "sr": "Serbian",
-  "su": "Sundanese",
-  "sv": "Swedish",
-  "sw": "Swahili",
-  "ta": "Tamil",
-  "te": "Telugu",
-  "tg": "Tajik",
-  "th": "Thai",
-  "tk": "Turkmen",
-  "tl": "Tagalog",
-  "tr": "Turkish",
-  "tt": "Tatar",
-  "uk": "Ukrainian",
-  "ur": "Urdu",
-  "uz": "Uzbek",
-  "vi": "Vietnamese",
-  "yi": "Yiddish",
-  "yo": "Yoruba",
-  "zh": "Chinese",
-}
-```
-
+Please see [https://www.deepl.com/docs-api/translate-text/](https://www.deepl.com/docs-api/translate-text/) for more information
 
 # Windows
 

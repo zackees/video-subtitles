@@ -18,6 +18,7 @@ from PyQt6.QtWidgets import (  # type: ignore
     QLabel,
     QLineEdit,
     QMainWindow,
+    QMessageBox,
     QVBoxLayout,
     QWidget,
 )
@@ -26,7 +27,7 @@ from video_subtitles.run import run
 from video_subtitles.say import say
 from video_subtitles.settings import Settings
 from video_subtitles.thread_processor import ThreadProcessor
-from video_subtitles.util import MODELS
+from video_subtitles.util import MODELS, parse_languages
 
 settings = Settings()
 
@@ -152,7 +153,12 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         deepl_api_key = self.deepl_input.text().strip()  # get api key from input field
         model = self.model_select.currentText().strip()
-        languages = self.output_text.text().strip().split(",")
+        try:
+            languages = parse_languages(self.output_text.text())
+        except ValueError as ve:
+            QMessageBox.critical(self, "Error", str(ve))
+            return
+
         languages = [lang.strip() for lang in languages]
         convert_to_webvtt = self.webvtt_select.currentText().strip() == "WEBVTT"
         for f in files:
