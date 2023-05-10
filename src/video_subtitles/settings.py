@@ -14,6 +14,7 @@ def get_settings_path() -> str:
     """Get settings path"""
     env_path = user_config_dir("video-subtitles", "video-subtitles", roaming=True)
     config_file = os.path.join(env_path, "settings.json")
+    os.makedirs(env_path, exist_ok=True)
     return config_file
 
 
