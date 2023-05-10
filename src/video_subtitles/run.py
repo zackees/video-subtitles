@@ -97,5 +97,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
                 os.remove(webvtt_file)
             convert_webvtt(srt_file, webvtt_file)
             os.remove(srt_file)
+    if os.path.exists("geckodriver.log"):  # appears when generating srt files
+        os.remove("geckodriver.log")
     print("Done translating")
     return outdir
