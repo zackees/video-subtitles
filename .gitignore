@@ -139,3 +139,4 @@ dmypy.json
 **/.DS_Store
 
 tests/text_video/
+src/video_subtitles/settings.json
