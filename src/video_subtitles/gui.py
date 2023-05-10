@@ -11,6 +11,7 @@ import sys
 from threading import Thread
 
 from PyQt6 import QtCore  # type: ignore
+from PyQt6.QtCore import pyqtSignal  # type: ignore
 from PyQt6.QtWidgets import (  # type: ignore
     QApplication,
     QComboBox,
@@ -19,6 +20,7 @@ from PyQt6.QtWidgets import (  # type: ignore
     QLineEdit,
     QMainWindow,
     QMessageBox,
+    QProgressBar,
     QPushButton,
     QVBoxLayout,
     QWidget,
@@ -46,11 +48,15 @@ def open_folder(path):
 class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
     """Main widget."""
 
+    progress_signal = pyqtSignal(bool)
+
     def __init__(self, on_drop_callback):  # pylint: disable=too-many-statements
         super().__init__()
+
         self.setWindowTitle("Video Subtitle Generator")
         self.resize(720, 480)
         self.setAcceptDrops(True)
+        self.on_destroy = None
 
         deepl_api_key = settings.deepl_key()
 
@@ -125,13 +131,26 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         self.label.setText("Drag and drop video file here for subtitles")
         self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
+        progress_bar_layout = QHBoxLayout()
+        # Create a progress bar
+        self.progress_bar = self.create_progress_bar()
+        self.progress_signal.connect(self.progress_bar.setVisible)
+        progress_bar_layout.addWidget(self.progress_bar)
+
         # Add the header pane and label widget to the main layout
         main_layout.addWidget(header_pane)
         main_layout.addWidget(self.label)
+        main_layout.addLayout(progress_bar_layout)
 
         # Setting the alignment of the header pane to the top
         main_layout.setAlignment(header_pane, QtCore.Qt.AlignmentFlag.AlignTop)
         self.on_drop_callback = on_drop_callback
+
+    def closeEvent(self, event):
+        """Called when the window is closed."""
+        if self.on_destroy:
+            self.on_destroy()
+        super().closeEvent(event)
 
     def show_help_dialog(self):
         """Shows a dialog with the language codes."""
@@ -142,6 +161,15 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
             text += f"{key}: {val}\n"
         dialog.setText(text)
         dialog.exec()
+
+    def create_progress_bar(self):
+        """Creates a progress bar."""
+        progress_bar = QProgressBar(self)
+        progress_bar.setMinimum(0)  # Set minimum value of the progress bar
+        progress_bar.setMaximum(0)  # Set maximum value of the progress bar
+        progress_bar.setValue(0)  # Set the current value of the progress bar
+        progress_bar.setVisible(False)  # Hide the progress bar by default
+        return progress_bar
 
     def dragEnterEvent(self, event):
         """Drag and drop handler."""
@@ -242,4 +270,17 @@ def run_gui() -> None:
 
     gui = MainWidget(callback)
     gui.show()
+
+    def update_function(val: bool):
+        """Updates the progress bar."""
+        data = update_function.__dict__
+        data["last_value"] = data.get("last_value", False)
+        if val == data["last_value"]:
+            return
+        data["last_value"] = val
+        gui.progress_signal.emit(val)
+
+    gui.on_destroy = thread_processor.stop
+    thread_processor.set_status_callback(update_function)
+    thread_processor.start()
     sys.exit(app.exec())

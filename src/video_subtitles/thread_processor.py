@@ -16,15 +16,22 @@ class ThreadProcessor(threading.Thread):
         self.pending_tasks: queue.Queue = queue.Queue()
         self.processing_task: threading.Thread | None = None
         self.event = threading.Event()
-        self.start()
+        self.update_status_cb = lambda _: None
+
+    def set_status_callback(self, callback) -> None:
+        """Sets the status callback."""
+        self.update_status_cb = callback
 
     def run(self) -> None:
         """Process each thread in the queue."""
         while not self.event.wait(0.1):
             if self.processing_task is not None:
+                self.update_status_cb(True)
                 if not self.processing_task.is_alive():
                     self.processing_task.join()
                     self.processing_task = None
+            else:
+                self.update_status_cb(False)
             if self.processing_task is not None:
                 continue
             if self.pending_tasks.empty():

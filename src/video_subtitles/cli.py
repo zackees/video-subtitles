@@ -42,7 +42,7 @@ def parse_args() -> argparse.Namespace:
         "--languages",
         type=parse_languages,
         help="Output languages as a comma-separated list.",
-        metavar="{en,es,fr,de,it,pt,ru,zh}",
+        metavar="{en,es,fr,de,it,ru,zh}",
         required=True,
     )
     parser.add_argument(
