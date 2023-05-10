@@ -1,6 +1,8 @@
 """
 Runs the program
 """
+
+import atexit
 import os
 import shutil
 
@@ -19,6 +21,15 @@ def find_srt_files(folder: str) -> list[str]:
             if filename.endswith(".srt"):
                 files.append(os.path.join(root, filename))
     return files
+
+
+def cleanup(file: str):
+    """Attempts to remove the file."""
+    if os.path.exists(file):
+        try:
+            os.remove(file)
+        except Exception as err:  # pylint: disable=broad-except
+            print(f"Error removing {file}: {err}")
 
 
 def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statements
@@ -97,7 +108,6 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
                 os.remove(webvtt_file)
             convert_webvtt(srt_file, webvtt_file)
             os.remove(srt_file)
-    if os.path.exists("geckodriver.log"):  # appears when generating srt files
-        os.remove("geckodriver.log")
+    atexit.register(cleanup, os.path.abspath("geckodriver.log"))
     print("Done translating")
     return outdir
