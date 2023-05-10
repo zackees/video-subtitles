@@ -22,6 +22,18 @@ class GraphicsInfo:
     idx: int
 
 
+def read_utf8(path: str) -> str:
+    """Read a UTF-8 file."""
+    with open(path, encoding="utf-8", mode="r") as file:
+        return file.read()
+
+
+def write_utf8(path: str, text: str) -> None:
+    """Write a UTF-8 file."""
+    with open(path, encoding="utf-8", mode="w") as file:
+        file.write(text)
+
+
 def query_cuda_video_cards() -> list[GraphicsInfo]:
     """Query the video cards on the system."""
     print("Querying video cards...")

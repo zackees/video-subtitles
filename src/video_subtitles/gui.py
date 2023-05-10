@@ -11,10 +11,21 @@ import sys
 from threading import Thread
 
 from PyQt6 import QtCore  # type: ignore
-from PyQt6.QtWidgets import QApplication, QLabel, QMainWindow  # type: ignore
+from PyQt6.QtWidgets import (  # type: ignore
+    QApplication,
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QMainWindow,
+    QVBoxLayout,
+    QWidget,
+)
 
 from video_subtitles.run import run
 from video_subtitles.say import say
+from video_subtitles.settings import Settings
+
+settings = Settings()
 
 
 def open_folder(path):
@@ -35,12 +46,43 @@ class MainWidget(QMainWindow):
         self.setWindowTitle("Video Subtitle Generator")
         self.resize(720, 480)
         self.setAcceptDrops(True)
-        # Add a label to the window on top of everythign elese
+
+        deepl_api_key = settings.deepl_key()
+
+        # Creating a QWidget instance
+        central_widget = QWidget()
+        self.setCentralWidget(central_widget)
+
+        # Creating a QVBoxLayout instance and set it as the layout for central_widget
+        main_layout = QVBoxLayout()
+        central_widget.setLayout(main_layout)
+
+        # Create a QWidget for the header pane
+        header_pane = QWidget()
+        header_layout = QHBoxLayout()
+        header_pane.setLayout(header_layout)
+
+        # Add the deepl api key label and input field to the header pane
+        self.deepl_label = QLabel(self)
+        self.deepl_label.setText("DeepL API Key:")
+        self.deepl_input = QLineEdit(self)
+        self.deepl_input.setMaxLength(80)  # set maximum length to 80 characters
+        self.deepl_input.setText(deepl_api_key)  # set the input field to the api key
+        header_layout.addWidget(self.deepl_label)
+        header_layout.addWidget(self.deepl_input)
+
+        # Add a label to the window on top of everything else
         self.label = QLabel(self)
-        # Adjust label so it is centered
+        self.label.setText("Drag and Drop Video File Here")
         self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
-        self.label.setText("    Drag and Drop Video File Here")
-        self.label.adjustSize()
+
+        # Add the header pane and label widget to the main layout
+        main_layout.addWidget(header_pane)
+        main_layout.addWidget(self.label)
+
+        # Setting the alignment of the header pane to the top
+        main_layout.setAlignment(header_pane, QtCore.Qt.AlignmentFlag.AlignTop)
+
         self.on_drop_callback = on_drop_callback
 
     def dragEnterEvent(self, event):
@@ -50,31 +92,42 @@ class MainWidget(QMainWindow):
         else:
             event.ignore()
 
+    def save_settings(self) -> None:
+        """Save the settings."""
+        deepl_api_key = self.deepl_input.text().strip()  # get api key from input field
+        if deepl_api_key != settings.deepl_key():
+            settings.set_deepl_key(deepl_api_key)  # write api key to settings
+            settings.save()  # save settings to file
+
     def dropEvent(self, event):
         """Drag and drop handler."""
+        self.save_settings()
         files = [u.toLocalFile() for u in event.mimeData().urls()]
+        deepl_api_key = self.deepl_input.text().strip()  # get api key from input field
         for f in files:
-            self.on_drop_callback(f)
+            self.on_drop_callback(f, deepl_api_key)  # pass api key to callback
 
 
 def run_gui() -> None:
     """Runs the gui."""
     app = QApplication(sys.argv)
 
-    def callback(videofile):
+    def callback(videofile: str, deepl_api_key: str | None):
         # path, _ = os.path.splitext(videofile)
         # os.makedirs(path, exist_ok=True)
         # open_folder(path)
+        if not deepl_api_key:
+            deepl_api_key = None
 
         # Open folder in the OS
-        def _generate_subtitles(videofile):
+        def _generate_subtitles(videofile, deeply_api_key):
             # perform the actual work here
             os.chdir(os.path.dirname(videofile))
             videofile = os.path.basename(videofile)
             try:
                 out = run(
                     file=videofile,
-                    deepl_api_key=None,
+                    deepl_api_key=deeply_api_key,
                     out_languages=["en", "zh", "it", "es", "fr"],
                     model="large",
                 )
@@ -87,7 +140,9 @@ def run_gui() -> None:
             voicename = os.path.basename(videofile).split(".")[0].replace("_", " ")
             say(f"Attention: {voicename} has completed subtitle generation")
 
-        Thread(target=_generate_subtitles, args=(videofile,), daemon=True).start()
+        Thread(
+            target=_generate_subtitles, args=(videofile, deepl_api_key), daemon=True
+        ).start()
 
     gui = MainWidget(callback)
     gui.show()

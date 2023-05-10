@@ -10,6 +10,7 @@ import warnings
 from video_subtitles import __version__
 from video_subtitles.run import run
 from video_subtitles.say import say
+from video_subtitles.settings import Settings
 from video_subtitles.util import (
     LANGUAGE_CODES,
     MODELS,
@@ -19,29 +20,8 @@ from video_subtitles.util import (
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-API_KEY_FILE = os.path.join(HERE, "api_key.txt")
 
-
-def read_utf8(path: str) -> str:
-    """Read a UTF-8 file."""
-    with open(path, "r", encoding="utf-8") as file:
-        return file.read()
-
-
-def write_utf8(path: str, text: str) -> None:
-    """Write a UTF-8 file."""
-    with open(path, "w", encoding="utf-8") as file:
-        file.write(text)
-
-
-def read_api_key() -> str:
-    """Read the API key."""
-    return read_utf8(API_KEY_FILE).strip()
-
-
-def write_api_key(api_key: str) -> None:
-    """Write the API key."""
-    write_utf8(API_KEY_FILE, api_key)
+settings = Settings()
 
 
 def parse_languages(languages_str: str) -> list[str]:
@@ -93,13 +73,14 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def validate_api_key() -> str:
+def validate_api_key() -> str | None:
     """Validate the API key."""
-    api_key = read_api_key()
+    api_key = settings.deepl_key()
     if not api_key:
         key = input("Enter your Transcribe Anything API key: ")
-        write_api_key(key)
-        api_key = read_api_key()
+        settings.set_deepl_key(key)
+        api_key = settings.deepl_key()
+        settings.save()
     return api_key
 
 
