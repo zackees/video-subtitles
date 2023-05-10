@@ -215,8 +215,9 @@ Run `./lint.sh` to find linting errors using `ruff`, `pylint`, `flake8` and `myp
 
 # Releases
 
+  * 1.0.5: Adds webvtt format option.
   * 1.0.4: Adds thread processor so that multiple files can be done one at a time.
-  * 1.0.3: Adds gui
-  * 1.0.2: Fix bug
+  * 1.0.3: Adds gui.
+  * 1.0.2: Fix bug.
   * 1.0.1: Adds retry to translation step. Also alerts when the video is done.
-  * 1.0.0: Initial release
+  * 1.0.0: Initial release.
