@@ -25,6 +25,14 @@ class Settings:
         """Set the DeepL API key."""
         self.data["deepl_key"] = key
 
+    def model(self) -> str:
+        """Return the model."""
+        return self.data.get("model", "large")  # type: ignore
+
+    def set_model(self, model: str) -> None:
+        """Set the model."""
+        self.data["model"] = model
+
     def save(self) -> None:
         """Save the settings."""
         # dump json to file

@@ -40,7 +40,7 @@ def open_folder(path):
         subprocess.Popen(["xdg-open", path])  # pylint: disable=consider-using-with
 
 
-class MainWidget(QMainWindow):
+class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
     """Main widget."""
 
     def __init__(self, on_drop_callback):
@@ -80,12 +80,23 @@ class MainWidget(QMainWindow):
         self.model_label.setText("Model:")
         self.model_select = QComboBox(self)
         self.model_select.addItems(MODELS.keys())
+        self.model_select.setCurrentText(settings.model())
         model_layout.addWidget(self.model_label)
         model_layout.addWidget(self.model_select)
         model_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
 
         header_layout.addLayout(deepl_layout)
         header_layout.addLayout(model_layout)
+
+        # Add translation output label and text field
+        output_layout = QHBoxLayout()
+        self.output_label = QLabel(self)
+        self.output_label.setText("Translation Outputs:")
+        self.output_text = QLineEdit(self)
+        output_layout.addWidget(self.output_label)
+        output_layout.addWidget(self.output_text)
+        output_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        header_layout.addLayout(output_layout)
 
         # Add a label to the window on top of everything else
         self.label = QLabel(self)
@@ -111,9 +122,10 @@ class MainWidget(QMainWindow):
     def save_settings(self) -> None:
         """Save the settings."""
         deepl_api_key = self.deepl_input.text().strip()  # get api key from input field
-        if deepl_api_key != settings.deepl_key():
-            settings.set_deepl_key(deepl_api_key)  # write api key to settings
-            settings.save()  # save settings to file
+        settings.set_deepl_key(deepl_api_key)  # write api key to settings
+        model = self.model_select.currentText().strip()
+        settings.set_model(model)
+        settings.save()  # save settings to file
 
     def dropEvent(self, event):
         """Drag and drop handler."""
