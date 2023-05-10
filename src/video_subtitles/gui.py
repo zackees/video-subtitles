@@ -6,8 +6,10 @@ Gui for the video_subtitles package
 
 import os
 import platform
+import queue
 import subprocess
 import sys
+import threading
 from threading import Thread
 
 from PyQt6 import QtCore  # type: ignore
@@ -101,7 +103,7 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
 
         # Add a label to the window on top of everything else
         self.label = QLabel(self)
-        self.label.setText("Drag and Drop Video File Here")
+        self.label.setText("Drag and drop video file here for subtitles")
         self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         # Add the header pane and label widget to the main layout
@@ -145,9 +147,48 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
             )  # pass api key to callback
 
 
+# Can't use futures because it doesn't have a daemon option so we have to
+# impliment our own thread processor.
+class ThreadProcessor(Thread):
+    """Thread processor."""
+
+    def __init__(self) -> None:
+        super().__init__(daemon=True)
+        self.pending_tasks: queue.Queue = queue.Queue()
+        self.processing_task: Thread | None = None
+        self.event = threading.Event()
+        self.start()
+
+    def run(self) -> None:
+        """Process each thread in the queue."""
+        while not self.event.wait(0.1):
+            if self.processing_task is not None:
+                if not self.processing_task.is_alive():
+                    self.processing_task.join()
+                    self.processing_task = None
+            if self.processing_task is not None:
+                continue
+            if self.pending_tasks.empty():
+                continue
+            self.processing_task = self.pending_tasks.get()
+            self.processing_task.start()
+
+    def add(self, thread: Thread) -> None:
+        """Queues a thread to be executed."""
+        assert thread.daemon is True
+        self.pending_tasks.put(thread)
+
+    def stop(self) -> None:
+        """Stops the thread executor."""
+        self.event.set()
+        self.join()
+
+
 def run_gui() -> None:
     """Runs the gui."""
     app = QApplication(sys.argv)
+
+    thread_processor = ThreadProcessor()
 
     def callback(
         videofile: str, deepl_api_key: str | None, languages: list[str], model: str
@@ -181,11 +222,12 @@ def run_gui() -> None:
             voicename = os.path.basename(videofile).split(".")[0].replace("_", " ")
             say(f"Attention: {voicename} has completed subtitle generation")
 
-        Thread(
+        thread = Thread(
             target=_generate_subtitles,
             args=(videofile, deepl_api_key, languages, model),
             daemon=True,
-        ).start()
+        )
+        thread_processor.add(thread)
 
     gui = MainWidget(callback)
     gui.show()
