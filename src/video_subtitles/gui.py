@@ -93,6 +93,7 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         self.output_label = QLabel(self)
         self.output_label.setText("Translation Outputs:")
         self.output_text = QLineEdit(self)
+        self.output_text.setText(",".join(settings.languages()))
         output_layout.addWidget(self.output_label)
         output_layout.addWidget(self.output_text)
         output_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -125,6 +126,9 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         settings.set_deepl_key(deepl_api_key)  # write api key to settings
         model = self.model_select.currentText().strip()
         settings.set_model(model)
+        languages = self.output_text.text().strip().split(",")
+        languages = [lang.strip() for lang in languages]
+        settings.set_languages(languages)
         settings.save()  # save settings to file
 
     def dropEvent(self, event):
@@ -133,15 +137,21 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         deepl_api_key = self.deepl_input.text().strip()  # get api key from input field
         model = self.model_select.currentText().strip()
+        languages = self.output_text.text().strip().split(",")
+        languages = [lang.strip() for lang in languages]
         for f in files:
-            self.on_drop_callback(f, deepl_api_key, model)  # pass api key to callback
+            self.on_drop_callback(
+                f, deepl_api_key, languages, model
+            )  # pass api key to callback
 
 
 def run_gui() -> None:
     """Runs the gui."""
     app = QApplication(sys.argv)
 
-    def callback(videofile: str, deepl_api_key: str | None, model: str):
+    def callback(
+        videofile: str, deepl_api_key: str | None, languages: list[str], model: str
+    ):
         # path, _ = os.path.splitext(videofile)
         # os.makedirs(path, exist_ok=True)
         # open_folder(path)
@@ -149,7 +159,9 @@ def run_gui() -> None:
             deepl_api_key = None
 
         # Open folder in the OS
-        def _generate_subtitles(videofile, deeply_api_key, model):
+        def _generate_subtitles(
+            videofile: str, deeply_api_key: str | None, languages: list[str], model: str
+        ):
             # perform the actual work here
             os.chdir(os.path.dirname(videofile))
             videofile = os.path.basename(videofile)
@@ -157,7 +169,7 @@ def run_gui() -> None:
                 out = run(
                     file=videofile,
                     deepl_api_key=deeply_api_key,
-                    out_languages=["en", "zh", "it", "es", "fr"],
+                    out_languages=languages,
                     model=model,
                 )
             except Exception as e:  # pylint: disable=broad-except
@@ -171,7 +183,7 @@ def run_gui() -> None:
 
         Thread(
             target=_generate_subtitles,
-            args=(videofile, deepl_api_key, model),
+            args=(videofile, deepl_api_key, languages, model),
             daemon=True,
         ).start()
 

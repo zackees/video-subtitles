@@ -14,7 +14,7 @@ class Settings:
     """Settings class."""
 
     def __init__(self) -> None:
-        self.data: dict[str, str | int | dict] = {}
+        self.data: dict[str, str | int | dict | list] = {}
         self.load()
 
     def deepl_key(self) -> str | None:
@@ -32,6 +32,17 @@ class Settings:
     def set_model(self, model: str) -> None:
         """Set the model."""
         self.data["model"] = model
+
+    def languages(self) -> list[str]:
+        """Return the languages."""
+        out = self.data.get(
+            "languages", ["en", "es", "fr", "de", "it", "pt", "ru", "zh"]
+        )
+        return out  # type: ignore
+
+    def set_languages(self, languages: list[str]) -> None:
+        """Set the languages."""
+        self.data["languages"] = languages
 
     def save(self) -> None:
         """Save the settings."""
