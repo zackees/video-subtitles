@@ -122,6 +122,7 @@ Run `./lint.sh` to find linting errors using `ruff`, `pylint`, `flake8` and `myp
 
 # Releases
 
+  * 1.0.8: Adds password field and centralizes settings.json under appdirs.
   * 1.0.7: Adds progress bar when doing work.
   * 1.0.6: Adds gui language help for language codes.
   * 1.0.5: Adds webvtt format option.
