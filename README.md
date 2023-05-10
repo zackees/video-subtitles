@@ -132,3 +132,16 @@ Run `./lint.sh` to find linting errors using `ruff`, `pylint`, `flake8` and `myp
   * 1.0.2: Fix bug.
   * 1.0.1: Adds retry to translation step. Also alerts when the video is done.
   * 1.0.0: Initial release.
+
+
+
+# Future Work
+
+### Text to Speech
+
+It would be a good idea to convert the subtitles into a spoken track that can be integrates into a video
+
+  * Eleven labs API
+    * Website: https://beta.elevenlabs.io/
+    * Rest API: https://docs.elevenlabs.io/api-reference/text-to-speech-stream
+    * Python API: https://github.com/elevenlabs/elevenlabs-python
