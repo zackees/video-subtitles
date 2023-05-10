@@ -67,7 +67,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
                     api_key=deepl_api_key,
                     in_srt=src_srt_file,
                     out_srt=out_file,
-                    from_lang="en-us",  # whisper ai is always en-us
+                    from_lang="en",
                     to_lang=language,
                 )
                 assert os.path.exists(
