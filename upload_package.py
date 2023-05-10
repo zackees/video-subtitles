@@ -10,7 +10,6 @@ import shutil
 import sys
 
 PYTHON_EXE = sys.executable
-PIP_EXE = os.path.join(os.path.dirname(PYTHON_EXE), "pip")
 
 # Equivalent to 'rm -rf build dist'
 if os.path.exists('build'):
@@ -19,7 +18,7 @@ if os.path.exists('dist'):
     shutil.rmtree('dist', ignore_errors=True)
 
 # Equivalent to 'pip install wheel twine'
-subprocess.check_call([PIP_EXE, 'install', 'wheel', 'twine'])
+subprocess.check_call(["pip", 'install', 'wheel', 'twine'])
 
 print("Building Source and Wheel (universal) distribution…")
 # Equivalent to 'python setup.py sdist bdist_wheel --universal'

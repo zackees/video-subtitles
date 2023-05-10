@@ -88,7 +88,7 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
 
         model_layout = QHBoxLayout()
         self.model_label = QLabel(self)
-        self.model_label.setText("Model:")
+        self.model_label.setText("AI Transcription Model:")
         self.model_select = QComboBox(self)
         self.model_select.addItems(MODELS.keys())
         self.model_select.setCurrentText(settings.model())
