@@ -4,6 +4,7 @@ Runs the program
 import os
 import shutil
 
+from video_subtitles.convert_to_webvtt import convert_to_webvtt as convert_webvtt
 from video_subtitles.translate import srt_wrap, translate
 
 IS_GITHUB = os.environ.get("GITHUB_ACTIONS", False)
@@ -25,6 +26,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     deepl_api_key: str | None,
     out_languages: list[str],
     model: str,
+    convert_to_webvtt: bool,
 ) -> str:
     """Run the program."""
     from transcribe_anything.api import (  # pylint: disable=import-outside-toplevel
@@ -87,5 +89,13 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
             os.remove(out_file)
         shutil.move(srt_file, out_file)
         shutil.rmtree(os.path.dirname(srt_file))
+    if convert_to_webvtt:
+        srt_files = find_srt_files(outdir)
+        for srt_file in srt_files:
+            webvtt_file = os.path.splitext(srt_file)[0] + ".vtt"
+            if os.path.exists(webvtt_file):
+                os.remove(webvtt_file)
+            convert_webvtt(srt_file, webvtt_file)
+            os.remove(srt_file)
     print("Done translating")
     return outdir

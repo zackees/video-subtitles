@@ -174,6 +174,7 @@ def run_gui() -> None:
                     deepl_api_key=deeply_api_key,
                     out_languages=languages,
                     model=model,
+                    convert_to_webvtt=True,
                 )
             except Exception as e:  # pylint: disable=broad-except
                 print(e)

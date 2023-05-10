@@ -23,6 +23,7 @@ class MainTester(unittest.TestCase):
             deepl_api_key=None,
             out_languages=["es", "fr", "zh"],
             model="small",
+            convert_to_webvtt=False,
         )
         self.assertTrue(os.path.exists("text_video"))
         self.assertTrue(os.path.exists(os.path.join("text_video", "en.srt")))

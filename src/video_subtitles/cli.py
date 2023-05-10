@@ -66,6 +66,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Don't say anything.",
     )
+    parser.add_argument(
+        "--webvtt",
+        action="store_true",
+        help="Output WebVTT format.",
+    )
     parser.add_argument("--api-key", default=None, help="Transcribe Anything API key.")
     args = parser.parse_args()
     if not args.languages:
@@ -120,6 +125,7 @@ def main() -> int:
             deepl_api_key=api_key,
             out_languages=args.languages,
             model=args.model,
+            convert_to_webvtt=args.webvtt,
         )
         if not args.quite:
             say(f"Finished generating srt files for {file}")
