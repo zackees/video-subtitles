@@ -4,6 +4,7 @@ Command line front end interface.
 
 import argparse
 import os
+import sys
 import warnings
 
 from video_subtitles import __version__
@@ -104,17 +105,24 @@ def validate_api_key() -> str:
 
 def main() -> int:
     """Main entry point for the template_python_cmd package."""
+    print(f"videosubtitles version: {__version__}")
+    cuda_cards = ensure_dependencies()
+    print("Found the following Nvidia/CUDA video cards:")
+    for card in cuda_cards:
+        print(f"  [{card.idx}]: {card.name}, {card.memory_gb} GB")
+    if len(sys.argv) == 1:
+        from video_subtitles.gui import (  # pylint: disable=import-outside-toplevel
+            run_gui,
+        )
+
+        run_gui()
+        return 0
     try:
         args = parse_args()
         file = args.file
         if not os.path.exists(file):
             print(f"Error - file does not exist: {file}")
             return 1
-        print(f"videosubtitles version: {__version__}")
-        cuda_cards = ensure_dependencies()
-        print("Found the following Nvidia/CUDA video cards:")
-        for card in cuda_cards:
-            print(f"  [{card.idx}]: {card.name}, {card.memory_gb} GB")
         api_key: None | str = None
         if args.api_key:
             api_key = args.api_key
