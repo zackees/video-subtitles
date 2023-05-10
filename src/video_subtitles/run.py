@@ -4,8 +4,6 @@ Runs the program
 import os
 import shutil
 
-from transcribe_anything.api import transcribe
-
 from video_subtitles.translate import srt_wrap, translate
 
 IS_GITHUB = os.environ.get("GITHUB_ACTIONS", False)
@@ -29,6 +27,10 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     model: str,
 ) -> str:
     """Run the program."""
+    from transcribe_anything.api import (  # pylint: disable=import-outside-toplevel
+        transcribe,
+    )
+
     print("Running transcription")
     out_languages = out_languages.copy()
     print(f"Output languages: {out_languages}")
