@@ -2,7 +2,7 @@
 Gui for the video_subtitles package
 """
 
-# pylint: disable=no-name-in-module,c-extension-no-member,invalid-name
+# pylint: disable=no-name-in-module,c-extension-no-member,invalid-name,line-too-long
 
 import os
 import platform
@@ -19,6 +19,7 @@ from PyQt6.QtWidgets import (  # type: ignore
     QLineEdit,
     QMainWindow,
     QMessageBox,
+    QPushButton,
     QVBoxLayout,
     QWidget,
 )
@@ -27,7 +28,7 @@ from video_subtitles.run import run
 from video_subtitles.say import say
 from video_subtitles.settings import Settings
 from video_subtitles.thread_processor import ThreadProcessor
-from video_subtitles.util import MODELS, parse_languages
+from video_subtitles.util import LANGUAGE_CODES, MODELS, parse_languages
 
 settings = Settings()
 
@@ -94,6 +95,7 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         self.webvtt_select = QComboBox(self)
         self.webvtt_select.addItems(["WEBVTT", "SRT"])
         self.webvtt_select.setCurrentText(settings.subtitle_format())
+
         webvtt_layout.addWidget(self.subtitle_format)
         webvtt_layout.addWidget(self.webvtt_select)
         webvtt_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -108,9 +110,14 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         self.output_label.setText("Translation Outputs:")
         self.output_text = QLineEdit(self)
         self.output_text.setText(",".join(settings.languages()))
+
+        # Add the Language Help button
+        self.help_button = QPushButton("Language Help")
+        self.help_button.clicked.connect(self.show_help_dialog)
         output_layout.addWidget(self.output_label)
         output_layout.addWidget(self.output_text)
         output_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+        output_layout.addWidget(self.help_button)
         header_layout.addLayout(output_layout)
 
         # Add a label to the window on top of everything else
@@ -124,8 +131,17 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
 
         # Setting the alignment of the header pane to the top
         main_layout.setAlignment(header_pane, QtCore.Qt.AlignmentFlag.AlignTop)
-
         self.on_drop_callback = on_drop_callback
+
+    def show_help_dialog(self):
+        """Shows a dialog with the language codes."""
+        dialog = QMessageBox()
+        dialog.setWindowTitle("Language Help")
+        text = "Use the following language codes to specify the languages you want to translate to:\n\n"
+        for key, val in LANGUAGE_CODES.items():
+            text += f"{key}: {val}\n"
+        dialog.setText(text)
+        dialog.exec()
 
     def dragEnterEvent(self, event):
         """Drag and drop handler."""
