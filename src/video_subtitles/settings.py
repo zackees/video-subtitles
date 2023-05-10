@@ -44,6 +44,15 @@ class Settings:
         """Set the languages."""
         self.data["languages"] = languages
 
+    def subtitle_format(self) -> str:
+        """Return the subtitle format."""
+        return self.data.get("subtitle_format", "WEBVTT")  # type: ignore
+
+    def set_subtitle_format(self, subtitle_format: str) -> None:
+        """Set the subtitle format."""
+        assert subtitle_format in ["WEBVTT", "SRT"]
+        self.data["subtitle_format"] = subtitle_format
+
     def save(self) -> None:
         """Save the settings."""
         # dump json to file

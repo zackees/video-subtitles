@@ -44,7 +44,7 @@ def open_folder(path):
 class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
     """Main widget."""
 
-    def __init__(self, on_drop_callback):
+    def __init__(self, on_drop_callback):  # pylint: disable=too-many-statements
         super().__init__()
         self.setWindowTitle("Video Subtitle Generator")
         self.resize(720, 480)
@@ -86,8 +86,20 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         model_layout.addWidget(self.model_select)
         model_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
 
+        # Add the convert_to_webvtt dropdown menu
+        webvtt_layout = QHBoxLayout()
+        self.subtitle_format = QLabel(self)
+        self.subtitle_format.setText("Subtitle Format:")
+        self.webvtt_select = QComboBox(self)
+        self.webvtt_select.addItems(["WEBVTT", "SRT"])
+        self.webvtt_select.setCurrentText(settings.subtitle_format())
+        webvtt_layout.addWidget(self.subtitle_format)
+        webvtt_layout.addWidget(self.webvtt_select)
+        webvtt_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+
         header_layout.addLayout(deepl_layout)
         header_layout.addLayout(model_layout)
+        header_layout.addLayout(webvtt_layout)
 
         # Add translation output label and text field
         output_layout = QHBoxLayout()
@@ -130,6 +142,8 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         languages = self.output_text.text().strip().split(",")
         languages = [lang.strip() for lang in languages]
         settings.set_languages(languages)
+        subtitle_format = self.webvtt_select.currentText().strip()
+        settings.set_subtitle_format(subtitle_format)
         settings.save()  # save settings to file
 
     def dropEvent(self, event):
@@ -140,9 +154,10 @@ class MainWidget(QMainWindow):  # pylint: disable=too-many-instance-attributes
         model = self.model_select.currentText().strip()
         languages = self.output_text.text().strip().split(",")
         languages = [lang.strip() for lang in languages]
+        convert_to_webvtt = self.webvtt_select.currentText().strip() == "WEBVTT"
         for f in files:
             self.on_drop_callback(
-                f, deepl_api_key, languages, model
+                f, deepl_api_key, languages, model, convert_to_webvtt
             )  # pass api key to callback
 
 
@@ -153,7 +168,11 @@ def run_gui() -> None:
     thread_processor = ThreadProcessor()
 
     def callback(
-        videofile: str, deepl_api_key: str | None, languages: list[str], model: str
+        videofile: str,
+        deepl_api_key: str | None,
+        languages: list[str],
+        model: str,
+        convert_to_webvtt: bool,
     ):
         # path, _ = os.path.splitext(videofile)
         # os.makedirs(path, exist_ok=True)
@@ -163,7 +182,8 @@ def run_gui() -> None:
 
         # Open folder in the OS
         def _generate_subtitles(
-            videofile: str, deeply_api_key: str | None, languages: list[str], model: str
+            videofile: str, deeply_api_key: str | None, languages: list[str], model: str,
+            convert_to_webvtt: bool
         ):
             # perform the actual work here
             os.chdir(os.path.dirname(videofile))
@@ -174,7 +194,7 @@ def run_gui() -> None:
                     deepl_api_key=deeply_api_key,
                     out_languages=languages,
                     model=model,
-                    convert_to_webvtt=True,
+                    convert_to_webvtt=convert_to_webvtt,
                 )
             except Exception as e:  # pylint: disable=broad-except
                 print(e)
@@ -183,11 +203,12 @@ def run_gui() -> None:
             open_folder(out)
             print("Generating subtitles for", videofile)
             voicename = os.path.basename(videofile).split(".")[0].replace("_", " ")
-            say(f"Attention: {voicename} has completed subtitle generation")
+            format = "WEBVTT" if convert_to_webvtt else "SRT"
+            say(f"Attention: {voicename} has completed subtitle generation in {format} format")
 
         thread = Thread(
             target=_generate_subtitles,
-            args=(videofile, deepl_api_key, languages, model),
+            args=(videofile, deepl_api_key, languages, model, convert_to_webvtt),
             daemon=True,
         )
         thread_processor.add(thread)
