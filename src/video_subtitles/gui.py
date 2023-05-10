@@ -13,6 +13,7 @@ from threading import Thread
 from PyQt6 import QtCore  # type: ignore
 from PyQt6.QtWidgets import (  # type: ignore
     QApplication,
+    QComboBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
@@ -24,6 +25,7 @@ from PyQt6.QtWidgets import (  # type: ignore
 from video_subtitles.run import run
 from video_subtitles.say import say
 from video_subtitles.settings import Settings
+from video_subtitles.util import MODELS
 
 settings = Settings()
 
@@ -59,17 +61,31 @@ class MainWidget(QMainWindow):
 
         # Create a QWidget for the header pane
         header_pane = QWidget()
-        header_layout = QHBoxLayout()
+        header_layout = QVBoxLayout()
         header_pane.setLayout(header_layout)
 
         # Add the deepl api key label and input field to the header pane
+        deepl_layout = QHBoxLayout()
         self.deepl_label = QLabel(self)
         self.deepl_label.setText("DeepL API Key:")
         self.deepl_input = QLineEdit(self)
         self.deepl_input.setMaxLength(80)  # set maximum length to 80 characters
         self.deepl_input.setText(deepl_api_key)  # set the input field to the api key
-        header_layout.addWidget(self.deepl_label)
-        header_layout.addWidget(self.deepl_input)
+        deepl_layout.addWidget(self.deepl_label)
+        deepl_layout.addWidget(self.deepl_input)
+        deepl_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+
+        model_layout = QHBoxLayout()
+        self.model_label = QLabel(self)
+        self.model_label.setText("Model:")
+        self.model_select = QComboBox(self)
+        self.model_select.addItems(MODELS.keys())
+        model_layout.addWidget(self.model_label)
+        model_layout.addWidget(self.model_select)
+        model_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
+
+        header_layout.addLayout(deepl_layout)
+        header_layout.addLayout(model_layout)
 
         # Add a label to the window on top of everything else
         self.label = QLabel(self)
@@ -104,15 +120,16 @@ class MainWidget(QMainWindow):
         self.save_settings()
         files = [u.toLocalFile() for u in event.mimeData().urls()]
         deepl_api_key = self.deepl_input.text().strip()  # get api key from input field
+        model = self.model_select.currentText().strip()
         for f in files:
-            self.on_drop_callback(f, deepl_api_key)  # pass api key to callback
+            self.on_drop_callback(f, deepl_api_key, model)  # pass api key to callback
 
 
 def run_gui() -> None:
     """Runs the gui."""
     app = QApplication(sys.argv)
 
-    def callback(videofile: str, deepl_api_key: str | None):
+    def callback(videofile: str, deepl_api_key: str | None, model: str):
         # path, _ = os.path.splitext(videofile)
         # os.makedirs(path, exist_ok=True)
         # open_folder(path)
@@ -120,7 +137,7 @@ def run_gui() -> None:
             deepl_api_key = None
 
         # Open folder in the OS
-        def _generate_subtitles(videofile, deeply_api_key):
+        def _generate_subtitles(videofile, deeply_api_key, model):
             # perform the actual work here
             os.chdir(os.path.dirname(videofile))
             videofile = os.path.basename(videofile)
@@ -129,7 +146,7 @@ def run_gui() -> None:
                     file=videofile,
                     deepl_api_key=deeply_api_key,
                     out_languages=["en", "zh", "it", "es", "fr"],
-                    model="large",
+                    model=model,
                 )
             except Exception as e:  # pylint: disable=broad-except
                 print(e)
@@ -141,7 +158,9 @@ def run_gui() -> None:
             say(f"Attention: {voicename} has completed subtitle generation")
 
         Thread(
-            target=_generate_subtitles, args=(videofile, deepl_api_key), daemon=True
+            target=_generate_subtitles,
+            args=(videofile, deepl_api_key, model),
+            daemon=True,
         ).start()
 
     gui = MainWidget(callback)
