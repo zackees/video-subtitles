@@ -10,11 +10,12 @@ keywords = ["template-python-cmd"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
-    "download",
-    "srtranslator",
-    "gTTS",
-    "playaudio",
-    "PyQt6==6.3.1"
+    "download==0.3.5",
+    "srtranslator==0.2.6",
+    "gTTS==2.3.2",
+    "playaudio==1.0.5",
+    "PyQt6==6.3.1",
+    "webvtt-py==0.4.6"
 ]
 
 dynamic = ["version"]
