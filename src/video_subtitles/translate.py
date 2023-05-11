@@ -23,7 +23,7 @@ def convert_deepl_language_codes_to_google(lang: str) -> str:
         lang = "PT"
     if "NB" in lang:
         lang = "NO"
-    return lang
+    return lang.lower()
 
 
 def translate(
@@ -32,11 +32,15 @@ def translate(
     """Translate a srt file."""
     if api_key is None:
         translator = FreeTranslator()
+        from_lang = from_lang.lower()
+        to_lang = to_lang.lower()
     elif api_key.lower() == "google":
         from_lang = convert_deepl_language_codes_to_google(from_lang)
         to_lang = convert_deepl_language_codes_to_google(to_lang)
         translator = GoogleTranslator()
     else:
+        from_lang = from_lang.lower()
+        to_lang = to_lang.lower()
         translator = DeeplApi(api_key=api_key)
     srt = SrtFile(in_srt)
     srt.translate(translator, from_lang, to_lang)

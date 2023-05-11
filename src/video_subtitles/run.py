@@ -6,6 +6,7 @@ import atexit
 import concurrent.futures
 import os
 import shutil
+import traceback
 from hashlib import md5
 
 from appdirs import user_config_dir  # type: ignore
@@ -52,6 +53,8 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     from transcribe_anything.api import (  # pylint: disable=import-outside-toplevel
         transcribe,
     )
+    if file != file.strip():
+        raise RuntimeError(f"File {os.path.basename(file)} cannot contain spaces at the beginning or end")
 
     cache = DiskLRUCache(CACHE_FILE, 16)
     file = os.path.abspath(file)
@@ -118,15 +121,22 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
                     break
                 except Exception as err:  # pylint: disable=broad-except
                     print(err)
+                    # print stack trace
+                    traceback.print_exc()
                     if i == attempts - 1:
                         raise
             print(f"Translated: {src_srt_file} -> {out_file}")
 
         tasks.append(do_translation)
+    exceptions = []
     if not ALLOW_CONCURRENT_TRANSLATION or deepl_api_key is not None:
         # This is super fast so just run all the tasks one at a time
         for task in tasks:
-            task()
+            try:
+                task()
+            except Exception as err:
+                traceback.print_exc()
+                exceptions.append(err)
     else:
         # Free api version uses selenium and is slow so run in parallel.
         print(
@@ -159,4 +169,9 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
             os.remove(srt_file)
     atexit.register(cleanup, os.path.abspath("geckodriver.log"))
     print("########################\n# Done translating!\n########################\n")
+    if exceptions:
+        print("Exceptions:")
+        for exception in exceptions:
+            print(exception)
+        raise RuntimeError("Exceptions occurred during translation")
     return outdir
