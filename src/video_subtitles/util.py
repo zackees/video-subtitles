@@ -36,6 +36,15 @@ def write_utf8(path: str, text: str) -> None:
         file.write(text)
 
 
+def ensure_dependencies() -> list[GraphicsInfo]:
+    """Ensure that dependencies are installed."""
+    cuda_cards = query_cuda_video_cards()
+    if not cuda_cards:
+        raise RuntimeError("No Nvidia/CUDA video cards found.")
+    ensure_transcribe_anything_installed()
+    return cuda_cards
+
+
 def query_cuda_video_cards() -> list[GraphicsInfo]:
     """Query the video cards on the system."""
     print("Querying video cards...")

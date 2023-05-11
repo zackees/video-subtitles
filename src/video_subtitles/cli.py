@@ -13,24 +13,13 @@ from video_subtitles.say import say
 from video_subtitles.settings import Settings
 from video_subtitles.util import (
     MODELS,
-    GraphicsInfo,
-    ensure_transcribe_anything_installed,
     parse_languages,
-    query_cuda_video_cards,
+    ensure_dependencies,
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
 settings = Settings()
-
-
-def ensure_dependencies() -> list[GraphicsInfo]:
-    """Ensure that dependencies are installed."""
-    cuda_cards = query_cuda_video_cards()
-    if not cuda_cards:
-        raise RuntimeError("No Nvidia/CUDA video cards found.")
-    ensure_transcribe_anything_installed()
-    return cuda_cards
 
 
 def parse_args() -> argparse.Namespace:

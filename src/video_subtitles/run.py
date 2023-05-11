@@ -6,13 +6,19 @@ import atexit
 import concurrent.futures
 import os
 import shutil
+from hashlib import md5
+
+from appdirs import user_config_dir  # type: ignore
+from disklru import DiskLRUCache  # type: ignore
 
 from video_subtitles.convert_to_webvtt import convert_to_webvtt as convert_webvtt
 from video_subtitles.translate import srt_wrap, translate
+from video_subtitles.util import read_utf8
 
 IS_GITHUB = os.environ.get("GITHUB_ACTIONS", False)
 ALLOW_CONCURRENT_TRANSLATION = False
 
+CACHE_FILE = os.path.join(user_config_dir("video-subtitles", "cache", roaming=True))
 
 def find_srt_files(folder: str) -> list[str]:
     """Find srt files in a folder."""
@@ -45,7 +51,8 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     from transcribe_anything.api import (  # pylint: disable=import-outside-toplevel
         transcribe,
     )
-
+    cache = DiskLRUCache(CACHE_FILE, 16)
+    file = os.path.abspath(file)
     print("Running transcription")
     out_languages = out_languages.copy()
     print(f"Output languages: {out_languages}")
@@ -55,7 +62,21 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     if deepl_api_key == "free":
         deepl_api_key = None
     device = "cuda" if not IS_GITHUB else "cpu"
-    out_en_dir = transcribe(url_or_file=file, device=device, model=model, language="en")
+    filemd5 = md5(file.encode("utf-8")).hexdigest()
+    key = f"{file}-{filemd5}-{model}"
+    cached_data = cache.get_json(key)
+    if cached_data:
+        print("Using cached data")
+        out_en_dir = cached_data["out_en_dir"]
+        srt_text = cached_data["srt_text"]
+    else:
+        out_en_dir = transcribe(url_or_file=file, device=device, model=model, language="en")
+        out_en_dir = os.path.abspath(out_en_dir)
+        srt_text = read_utf8(os.path.join(out_en_dir, "out.srt"))
+        cache.put_json(key, {
+            "out_en_dir": out_en_dir,
+            "srt_text": srt_text
+        })
     print(f"Output directory: {out_en_dir}")
     if not os.path.exists(out_en_dir):
         raise RuntimeError(f"Error - folder does not exist: {out_en_dir}")
