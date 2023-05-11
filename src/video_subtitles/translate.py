@@ -30,12 +30,12 @@ def translate(
     api_key: str | None, in_srt: str, out_srt: str, from_lang: str, to_lang: str
 ) -> None:
     """Translate a srt file."""
-    if api_key.lower() == "google":
+    if api_key is None:
+        translator = FreeTranslator()
+    elif api_key.lower() == "google":
         from_lang = convert_deepl_language_codes_to_google(from_lang)
         to_lang = convert_deepl_language_codes_to_google(to_lang)
         translator = GoogleTranslator()
-    elif api_key is None:
-        translator = FreeTranslator()
     else:
         translator = DeeplApi(api_key=api_key)
     srt = SrtFile(in_srt)
