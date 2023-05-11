@@ -53,8 +53,11 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     from transcribe_anything.api import (  # pylint: disable=import-outside-toplevel
         transcribe,
     )
+
     if file != file.strip():
-        raise RuntimeError(f"File {os.path.basename(file)} cannot contain spaces at the beginning or end")
+        raise RuntimeError(
+            f"File {os.path.basename(file)} cannot contain spaces at the beginning or end"
+        )
 
     cache = DiskLRUCache(CACHE_FILE, 16)
     file = os.path.abspath(file)
@@ -134,7 +137,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
         for task in tasks:
             try:
                 task()
-            except Exception as err:
+            except Exception as err:  # pylint: disable=broad-except
                 traceback.print_exc()
                 exceptions.append(err)
     else:
