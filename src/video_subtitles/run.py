@@ -20,6 +20,7 @@ ALLOW_CONCURRENT_TRANSLATION = False
 
 CACHE_FILE = os.path.join(user_config_dir("video-subtitles", "cache", roaming=True))
 
+
 def find_srt_files(folder: str) -> list[str]:
     """Find srt files in a folder."""
     files = []
@@ -51,6 +52,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     from transcribe_anything.api import (  # pylint: disable=import-outside-toplevel
         transcribe,
     )
+
     cache = DiskLRUCache(CACHE_FILE, 16)
     file = os.path.abspath(file)
     print("Running transcription")
@@ -74,13 +76,12 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
             with open(os.path.join(out_en_dir, "out.srt"), "w", encoding="utf-8") as f:
                 f.write(srt_text)
     else:
-        out_en_dir = transcribe(url_or_file=file, device=device, model=model, language="en")
+        out_en_dir = transcribe(
+            url_or_file=file, device=device, model=model, language="en"
+        )
         out_en_dir = os.path.abspath(out_en_dir)
         srt_text = read_utf8(os.path.join(out_en_dir, "out.srt"))
-        cache.put_json(key, {
-            "out_en_dir": out_en_dir,
-            "srt_text": srt_text
-        })
+        cache.put_json(key, {"out_en_dir": out_en_dir, "srt_text": srt_text})
     print(f"Output directory: {out_en_dir}")
     if not os.path.exists(out_en_dir):
         raise RuntimeError(f"Error - folder does not exist: {out_en_dir}")

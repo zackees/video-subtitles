@@ -18,11 +18,13 @@ def srt_wrap(srt_file: str) -> None:
 
 
 def convert_deepl_language_codes_to_google(lang: str) -> str:
+    """Some Google language codes are different from Deepl's, non-exhaustive list."""
     if "PT-" in lang:  # Portuguese dialects not supported by google.
         lang = "PT"
     if "NB" in lang:
         lang = "NO"
     return lang
+
 
 def translate(
     api_key: str | None, in_srt: str, out_srt: str, from_lang: str, to_lang: str

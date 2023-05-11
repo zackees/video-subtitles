@@ -287,5 +287,6 @@ def run_gui() -> None:
     thread_processor.start()
     sys.exit(app.exec())
 
+
 if __name__ == "__main__":
     run_gui()

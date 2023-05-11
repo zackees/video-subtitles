@@ -11,11 +11,7 @@ from video_subtitles import __version__
 from video_subtitles.run import run
 from video_subtitles.say import say
 from video_subtitles.settings import Settings
-from video_subtitles.util import (
-    MODELS,
-    parse_languages,
-    ensure_dependencies,
-)
+from video_subtitles.util import MODELS, ensure_dependencies, parse_languages
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
