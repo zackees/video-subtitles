@@ -68,7 +68,11 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     if cached_data:
         print("Using cached data")
         out_en_dir = cached_data["out_en_dir"]
+        os.makedirs(out_en_dir, exist_ok=True)
         srt_text = cached_data["srt_text"]
+        if not os.path.exists(os.path.join(out_en_dir, "out.srt")):
+            with open(os.path.join(out_en_dir, "out.srt"), "w", encoding="utf-8") as f:
+                f.write(srt_text)
     else:
         out_en_dir = transcribe(url_or_file=file, device=device, model=model, language="en")
         out_en_dir = os.path.abspath(out_en_dir)
