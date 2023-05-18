@@ -49,7 +49,7 @@ def query_cuda_video_cards() -> list[GraphicsInfo]:
     """Query the video cards on the system."""
     print("Querying video cards...")
     if which("nvidia-smi") is None:
-        raise RuntimeError("nvidia-smi is not installed.")
+        return []
     cmd = "nvidia-smi --query-gpu=name,memory.total --format=csv,noheader"
     text = subprocess.check_output(cmd.split(" "), universal_newlines=True)
     lines = [line.strip() for line in text.split("\n") if line.strip() != ""]
@@ -77,9 +77,7 @@ def ensure_transcribe_anything_installed() -> None:
             )
             rtn = subprocess.call(["python", os.path.join(tempdir, "install_cuda.py")])
             if rtn != 0:
-                raise RuntimeError(  # pylint: disable=raise-missing-from
-                    "install_cuda.py failed."
-                )
+                raise RuntimeError("install_cuda.py failed.")  # pylint: disable=raise-missing-from
 
 
 def parse_languages(languages_str: str) -> list[str]:

@@ -11,7 +11,7 @@ from video_subtitles import __version__
 from video_subtitles.run import run
 from video_subtitles.say import say
 from video_subtitles.settings import Settings
-from video_subtitles.util import MODELS, ensure_dependencies, parse_languages
+from video_subtitles.util import MODELS, parse_languages, query_cuda_video_cards
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -68,10 +68,13 @@ def validate_api_key() -> str | None:
 def main() -> int:
     """Main entry point for the template_python_cmd package."""
     print(f"videosubtitles version: {__version__}")
-    cuda_cards = ensure_dependencies()
-    print("Found the following Nvidia/CUDA video cards:")
-    for card in cuda_cards:
-        print(f"  [{card.idx}]: {card.name}, {card.memory_gb} GB")
+    cuda_cards = query_cuda_video_cards()
+    if cuda_cards:
+        print("Found the following Nvidia/CUDA video cards:")
+        for card in cuda_cards:
+            print(f"  [{card.idx}]: {card.name}, {card.memory_gb} GB")
+    else:
+        print("No Nvidia/CUDA video cards found. Expect degraded performance.")
     if len(sys.argv) == 1:
         from video_subtitles.gui import (  # pylint: disable=import-outside-toplevel
             run_gui,
