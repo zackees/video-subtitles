@@ -122,6 +122,7 @@ Run `./lint.sh` to find linting errors using `ruff`, `pylint`, `flake8` and `myp
 
 # Releases
 
+  * 1.0.10: Allows app to run when not using hardware acceleration for AI.
   * 1.0.9: Fix settings.json bug in not created directories.
   * 1.0.8: Adds password field and centralizes settings.json under appdirs.
   * 1.0.7: Adds progress bar when doing work.
