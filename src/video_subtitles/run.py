@@ -11,7 +11,6 @@ from hashlib import md5
 
 from appdirs import user_config_dir  # type: ignore
 from disklru import DiskLRUCache  # type: ignore
-import torch.cuda
 
 from video_subtitles.convert_to_webvtt import convert_to_webvtt as convert_webvtt
 from video_subtitles.translate import srt_wrap, translate
@@ -53,6 +52,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     from transcribe_anything.api import (  # pylint: disable=import-outside-toplevel
         transcribe,
     )
+    from transcribe_anything.util import get_computing_device  # pylint: disable=import-outside-toplevel
 
     if file != file.strip():
         raise RuntimeError(
@@ -68,8 +68,7 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     print("Done running transcription")
     if deepl_api_key == "free":
         deepl_api_key = None
-    has_cuda = torch.cuda.is_available()
-    device = "cuda" if has_cuda else "cpu"
+    device = get_computing_device()
     filemd5 = md5(file.encode("utf-8")).hexdigest()
     key = f"{file}-{filemd5}-{model}"
     cached_data = cache.get_json(key)
