@@ -77,7 +77,9 @@ def ensure_transcribe_anything_installed() -> None:
             )
             rtn = subprocess.call(["python", os.path.join(tempdir, "install_cuda.py")])
             if rtn != 0:
-                raise RuntimeError("install_cuda.py failed.")  # pylint: disable=raise-missing-from
+                raise RuntimeError(  # pylint: disable=raise-missing-from
+                    "install_cuda.py failed."
+                )  # pylint: disable=raise-missing-from
 
 
 def parse_languages(languages_str: str) -> list[str]:

@@ -11,12 +11,12 @@ from hashlib import md5
 
 from appdirs import user_config_dir  # type: ignore
 from disklru import DiskLRUCache  # type: ignore
+import torch.cuda
 
 from video_subtitles.convert_to_webvtt import convert_to_webvtt as convert_webvtt
 from video_subtitles.translate import srt_wrap, translate
 from video_subtitles.util import read_utf8
 
-IS_GITHUB = os.environ.get("GITHUB_ACTIONS", False)
 ALLOW_CONCURRENT_TRANSLATION = False
 
 CACHE_FILE = os.path.join(user_config_dir("video-subtitles", "cache", roaming=True))
@@ -58,7 +58,6 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
         raise RuntimeError(
             f"File {os.path.basename(file)} cannot contain spaces at the beginning or end"
         )
-
     cache = DiskLRUCache(CACHE_FILE, 16)
     file = os.path.abspath(file)
     print("Running transcription")
@@ -69,7 +68,8 @@ def run(  # pylint: disable=too-many-locals,too-many-branches,too-many-statement
     print("Done running transcription")
     if deepl_api_key == "free":
         deepl_api_key = None
-    device = "cuda" if not IS_GITHUB else "cpu"
+    has_cuda = torch.cuda.is_available()
+    device = "cuda" if has_cuda else "cpu"
     filemd5 = md5(file.encode("utf-8")).hexdigest()
     key = f"{file}-{filemd5}-{model}"
     cached_data = cache.get_json(key)

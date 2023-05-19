@@ -17,7 +17,7 @@ dependencies = [
     "PyQt6==6.3.1",
     "webvtt-py==0.4.6",
     "appdirs==1.4.4",
-    "disklru>=1.0.2"
+    "disklru>=1.0.5"
 ]
 
 dynamic = ["version"]
