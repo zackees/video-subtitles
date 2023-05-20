@@ -6,6 +6,7 @@ import tempfile
 import unittest
 
 from video_subtitles.convert_to_webvtt import convert_to_webvtt
+from video_subtitles.util import read_utf8
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
@@ -21,6 +22,8 @@ class SrtToWebvtt(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdirname:
             out_file = os.path.join(tmpdirname, "out.vtt")
             convert_to_webvtt(TEST_SRT, out_file)
+            content = read_utf8(out_file)
+            print(content)
 
 
 if __name__ == "__main__":
