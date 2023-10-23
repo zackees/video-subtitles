@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "video-subtitles"
 description = "Creates Video Subtitles"
 requires-python = ">=3.7"
-keywords = ["template-python-cmd"]
+keywords = ["video subtitles whisper ai"]
 license = { text = "BSD 3-Clause License" }
 classifiers = ["Programming Language :: Python :: 3"]
 dependencies = [
